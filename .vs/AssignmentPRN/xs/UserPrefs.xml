@@ -1,6 +1,0 @@
-﻿<Properties StartupConfiguration="{15CB68A5-1E05-4000-8629-4C21C6C6C604}|Default">
-  <MultiItemStartupConfigurations />
-  <MonoDevelop.Ide.ItemProperties.WebAPI FirstBuild="True" />
-  <MonoDevelop.Ide.ItemProperties.FAPortal FirstBuild="True" PreferredExecutionTarget="/Applications/Google Chrome.app" />
-  <MonoDevelop.Ide.ItemProperties.BusinessObject FirstBuild="True" />
-</Properties>
