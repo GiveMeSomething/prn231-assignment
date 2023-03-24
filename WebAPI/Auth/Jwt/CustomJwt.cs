@@ -61,6 +61,36 @@ namespace WebAPI.Auth.Jwt
             return true;
         }
 
+        public static JwtSecurityToken? ReadToken(string token)
+        {
+            if (token.IsNullOrEmpty())
+            {
+                return null;
+            }
+
+            if (string.IsNullOrEmpty(_secretKey))
+            {
+                LoadConfig();
+            }
+
+            if (!ValidateToken(token))
+            {
+                return null;
+            }
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+
+            try
+            {
+                return tokenHandler.ReadJwtToken(token);
+            }
+            catch (SecurityTokenException e)
+            {
+                Console.WriteLine("Token is invalid" + e.Message);
+                return null;
+            }
+        }
+
         // Load secret key from appsettings.json
         private static void LoadConfig()
         {
@@ -79,6 +109,9 @@ namespace WebAPI.Auth.Jwt
             return new TokenValidationParameters
             {
                 ValidateLifetime = true,
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
                 IssuerSigningKey = new SymmetricSecurityKey(
                     Encoding.UTF8.GetBytes(_secretKey)
                 )
