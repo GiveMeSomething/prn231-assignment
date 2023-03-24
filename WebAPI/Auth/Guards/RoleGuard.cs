@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using WebAPI.Auth.Decorator;
 
-namespace WebAPI.Auth.Middleware
+namespace WebAPI.Auth.Guards
 {
-    public class AuthGuard : CanActivate
+    public class RoleGuard : CanActivate
     {
         public override bool canActivate(ActionExecutingContext context)
         {
-            if(context == null || context.ActionDescriptor == null)
+            if (context == null || context.ActionDescriptor == null)
             {
                 return false;
             }
@@ -20,12 +20,19 @@ namespace WebAPI.Auth.Middleware
                 .GetCustomAttributes<Roles>()
                 .FirstOrDefault();
 
-            foreach(string role in requiredRoles.ValidRoles)
+            if (requiredRoles == null)
             {
-                Console.WriteLine(role);
+                return true;
             }
 
-            return true;
+            foreach (string role in requiredRoles.ValidRoles)
+            {
+                // Check roles between JWT payload and endpoints allowed roles
+                Console.WriteLine(role);
+                return true;
+            }
+
+            return false;
         }
     }
 }

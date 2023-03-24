@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Auth.Decorator;
-using WebAPI.Auth.Middleware;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using WebAPI.Auth.Guards;
+using WebAPI.Auth.Jwt;
 
 namespace WebAPI.Controllers
 {
     [Route("api/dev")]
     [ApiController]
     [UseGuard(typeof(AuthGuard))]
+    [UseGuard(typeof(RoleGuard))]
     public class DevController : Controller
     {
         [Route("exec")]
@@ -20,7 +20,12 @@ namespace WebAPI.Controllers
         [Roles("student", "teacher")]
         public IActionResult ExecTest()
         {
-            return Ok();
+            var testToken = CustomJwt.GenerateToken(new
+            {
+                Data = "Hello World"
+            });
+
+            return Ok(testToken);
         }
     }
 }

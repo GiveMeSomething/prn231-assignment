@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
-using WebAPI.Auth.Middleware;
+using WebAPI.Auth.Guards;
 
 namespace WebAPI.Auth.Decorator
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace WebAPI.Auth.Middleware
+namespace WebAPI.Auth.Guards
 {
     public abstract class CanActivate
     {
