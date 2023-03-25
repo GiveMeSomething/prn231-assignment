@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using AutoMapper;
 using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Auth;
+using WebAPI.AutoMapper.Models;
 using WebAPI.Base.Jwt;
 using WebAPI.DTOs;
-using WebAPI.DTOs.Auth;
 using WebAPI.Services;
 
 namespace WebAPI.Controllers
@@ -17,10 +18,12 @@ namespace WebAPI.Controllers
 	public class AuthController
 	{
 		private readonly AssignmentPRNContext _context;
+		private readonly IMapper _mapper;
 
-		public AuthController(AssignmentPRNContext context, IUserService userService)
+		public AuthController(AssignmentPRNContext context, IMapper mapper)
 		{
 			_context = context;
+			_mapper = mapper;
 		}
 
 		[Route("login")]
@@ -60,12 +63,27 @@ namespace WebAPI.Controllers
 		[Roles(Role.Admin)]
 		public IActionResult Signup(SignupDTO userInfo)
 		{
-			// Find user in database
+			var adminSignup = _mapper.Map<AdminSignupDTO>(userInfo);
 
-			// Return error if existed
+			// Find user in database
+			var foundUser = _context.Users.FirstOrDefault(u => u.Email == adminSignup.Email);
+			if(foundUser != null)
+			{
+				return new BadRequestObjectResult(new
+				{
+					Message = "This email had been registered with another account"
+				});
+			}
 
 			// If not, hash password and save into database
-
+			var hashPwd = GetHash(adminSignup.Password);
+			_context.Users.Add(new User
+			{
+				Name = userInfo.Name,
+				Email = userInfo.Email,
+				Password = hashPwd,
+				Role = adminSignup.Role
+			});
 			return new OkResult();
         }
 
