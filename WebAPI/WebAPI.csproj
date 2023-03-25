@@ -15,6 +15,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.27.0" />
+    <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.4.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,7 @@
     <None Remove="src\User\DTOs\" />
     <None Remove="src\Resource\" />
     <None Remove="src\Developer\" />
+    <None Remove="src\Firebase\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="UserFiles\" />
@@ -52,5 +55,6 @@
     <Folder Include="src\User\DTOs\" />
     <Folder Include="src\Resource\" />
     <Folder Include="src\Developer\" />
+    <Folder Include="src\Firebase\" />
   </ItemGroup>
 </Project>

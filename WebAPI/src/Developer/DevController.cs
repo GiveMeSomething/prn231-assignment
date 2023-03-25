@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 using BusinessObject.Models;
+using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Auth;
 using WebAPI.Base.Guard;
@@ -14,12 +15,42 @@ namespace WebAPI.Controllers
     [ApiController]
     public class DevController : Controller
     {
-        [Route("exec")]
-        [HttpGet]
-        public IActionResult ExecTest()
+        private readonly StorageClient _storageClient;
+
+        private const string _bucketName = "prn231assignment.appspot.com";
+
+        public DevController(StorageClient storageClient)
         {
-            var password = "testing123";
-            return Ok(GetHash(password));
+            _storageClient = storageClient;
+        }
+
+        [Route("exec")]
+        [HttpPost]
+        public async Task<IActionResult> ExecTest([FromForm] IFormFile file)
+        {
+            var objectName = "uploads/test2";
+
+            // Upload file
+            using (var stream = file.OpenReadStream())
+            {
+                await _storageClient.UploadObjectAsync(_bucketName, objectName, null, stream);
+            }
+
+            var url = $"https://storage.googleapis.com/{_bucketName}/{objectName}";
+
+            // Download file
+            using (var stream = new MemoryStream())
+            {
+                _storageClient.DownloadObject(_bucketName, objectName, stream);
+
+                // Set the position of the stream to the beginning
+                stream.Seek(0, SeekOrigin.Begin);
+
+                var reader = new StreamReader(stream);
+                var content = reader.ReadToEnd();
+
+                return Ok(content);
+            }
         }
 
         [Route("token/{id}/{token}")]

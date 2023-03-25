@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessObject.Models;
+using Google.Cloud.Storage.V1;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAPI.Auth;
@@ -16,15 +17,21 @@ namespace WebAPI.Controllers
     [UseGuard(typeof(RoleGuard))]
     public class ResourceController : ControllerBase
     {
+        private readonly StorageClient _firebaseStorage;
         private readonly AssignmentPRNContext _context;
-        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public ResourceController(AssignmentPRNContext context, IUserService service, IMapper mapper)
+        private const string _bucketName = "prn231assignment.appspot.com";
+
+        public ResourceController(
+            AssignmentPRNContext context,
+            IMapper mapper,
+            StorageClient storageClient
+        )
         {
             _context = context;
-            _userService = service;
             _mapper = mapper;
+            _firebaseStorage = storageClient;
         }
 
         [HttpGet("{resourceId}")]
@@ -82,44 +89,50 @@ namespace WebAPI.Controllers
             {
                 name = fFile.FileName;
             }
-            var path = GetStoragePath(classId, name);
-            var directory = Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory))
+
+            var objectName = "uploads/" + name;
+
+            using(var stream = fFile.OpenReadStream())
             {
-                Directory.CreateDirectory(directory);
-            }
-            using (var stream = new FileStream(path, FileMode.Create))
-            {
-                await fFile.CopyToAsync(stream);
+                await _firebaseStorage.UploadObjectAsync(_bucketName, objectName, null, stream);
             }
 
-            var existingFile = await _context.ClassFiles.Where(f => f.FilePath == path).FirstOrDefaultAsync();
+            //var path = GetStoragePath(name);
+            //using (var stream = new FileStream(path, FileMode.Create))
+            //{
+            //    await fFile.CopyToAsync(stream);
+            //}
 
-            if (existingFile != null)
-            {
-                existingFile.ContentType = fFile.ContentType;
-                _context.Attach(existingFile);
-                _context.SaveChanges();
-                return Ok(new
-                {
-                    message = "A file with similar name already existed. The file was overwritten.",
-                    file = _mapper.Map<ClassFileDto>(existingFile)
-                });
-            }
-            else
-            {
-                var file = new ClassFile()
-                {
-                    Name = name,
-                    ContentType = fFile.ContentType,
-                    FilePath = path,
-                    ClassId = classId
-                };
-                _context.Add(file);
-                _context.SaveChanges();
-                file.Class = null;
-                return Ok(new { file = _mapper.Map<ClassFileDto>(file) });
-            }
+            //var existingFile = await _context.ClassFiles.Where(f => f.FilePath == path).FirstOrDefaultAsync();
+
+            //if (existingFile != null)
+            //{
+            //    existingFile.ContentType = fFile.ContentType;
+            //    _context.Attach(existingFile);
+            //    _context.SaveChanges();
+            //    return Ok(new
+            //    {
+            //        message = "A file with similar name already existed. The file was overriden.",
+            //        file = _mapper.Map<ClassFileDto>(existingFile)
+            //    });
+            //}
+            //else
+            //{
+            //    var file = new ClassFile()
+            //    {
+            //        Name = name,
+            //        ContentType = fFile.ContentType,
+            //        FilePath = path,
+            //        ClassId = classId
+            //    };
+            //    _context.Add(file);
+            //    _context.SaveChanges();
+            //    file.Class = null;
+            //    return Ok(new { file = _mapper.Map<ClassFileDto>(file) });
+            //}
+
+            var url = $"https://storage.googleapis.com/{_bucketName}/{objectName}";
+            return Ok(url);
         }
 
         [HttpDelete("{resourceId}")]
