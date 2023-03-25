@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,9 +10,14 @@ namespace BusinessObject.Models
 {
     public class Class
     {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
+
+        [Required]
         public string Name { get; set; }
-        public IList<ClassFile>? ClassFiles { get; set; }
+
+        public ICollection<ClassFile> ClassFiles { get; set; }
+
         public IList<User>? Members { get; set; }
     }
 }

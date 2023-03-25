@@ -20,6 +20,7 @@ namespace BusinessObject.Models
             IConfigurationRoot configuration = builder.Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("DB"));
         }
+
         public DbSet<Class> Classes { get; set; }
         public DbSet<ClassFile> ClassFiles { get; set; }
 
@@ -27,6 +28,7 @@ namespace BusinessObject.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
         }
     }
 }
