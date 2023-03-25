@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using BusinessObject.Models;
 
-namespace WebAPI.DTOs.Auth
+namespace WebAPI.DTOs
 {
 	public class SignupDTO
 	{

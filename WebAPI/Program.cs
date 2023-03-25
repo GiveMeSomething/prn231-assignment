@@ -15,6 +15,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 // Auto mapper config
 builder.Services.AddAutoMapper(typeof(ResourceProfile));
+builder.Services.AddAutoMapper(typeof(AuthProfile));
 
 // Swagger stuffs
 builder.Services.AddSwaggerGen();

@@ -26,7 +26,7 @@ namespace WebAPI.Services
             return new UserJwt
 			{
 				UserId = Int32.Parse(userId),
-				Role = (Role)Int32.Parse(role),
+				Role = (Role)Enum.Parse(typeof(Role), role),
 			};
 		}
 	}
