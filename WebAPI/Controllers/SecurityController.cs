@@ -7,7 +7,7 @@ using WebAPI.Models;
 namespace WebAPI.Controllers
 {
     [ApiController]
-    [Route("api/{controller}")]
+    [Route("api/[controller]")]
     public class SecurityController : Controller
     {
         private readonly AssignmentPRNContext _dbContext;

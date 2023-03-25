@@ -1,5 +1,6 @@
 ﻿using BusinessObject.Models;
 using WebAPI.Auth.Services;
+using WebAPI.AutoMapper.Profiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +11,7 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<AssignmentPRNContext>();
 builder.Services.AddTransient<IUserContextService, UserContextService>();
+builder.Services.AddAutoMapper(typeof(ResourceProfile));
 
 // Swagger stuffs
 builder.Services.AddSwaggerGen();

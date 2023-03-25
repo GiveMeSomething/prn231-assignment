@@ -6,13 +6,11 @@ using System.Threading.Tasks;
 
 namespace BusinessObject.Models
 {
-    public class ClassFile
+    public class ClassFileDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
         public string ContentType { get; set; }
-        public string FilePath { get; set; }
         public int ClassId { get; set; }
-        public Class? Class { get; set; }
     }
 }
