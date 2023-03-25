@@ -29,6 +29,8 @@
     <None Remove="Controllers\" />
     <None Remove="Auth\JWT\" />
     <None Remove="Utils\" />
+    <None Remove="DTOs\" />
+    <None Remove="DTOs\Auth\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Auth\" />
@@ -37,5 +39,7 @@
     <Folder Include="Controllers\" />
     <Folder Include="UserFiles\" />
     <Folder Include="Utils\" />
+    <Folder Include="DTOs\" />
+    <Folder Include="DTOs\Auth\" />
   </ItemGroup>
 </Project>

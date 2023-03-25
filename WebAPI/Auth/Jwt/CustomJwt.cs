@@ -48,15 +48,7 @@ namespace WebAPI.Auth.Jwt
             var tokenHandler = new JwtSecurityTokenHandler();
             var validationOpts = GetValidationParameters();
 
-            try
-            {
-                tokenHandler.ValidateToken(token, validationOpts, out var validatedToken);
-            }
-            catch (SecurityTokenException e)
-            {
-                Console.WriteLine("Token is invalid" + e.Message);
-                return false;
-            }
+            tokenHandler.ValidateToken(token, validationOpts, out var validatedToken);
 
             return true;
         }
@@ -94,7 +86,6 @@ namespace WebAPI.Auth.Jwt
         // Load secret key from appsettings.json
         private static void LoadConfig()
         {
-            Console.WriteLine(Directory.GetCurrentDirectory());
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json")
