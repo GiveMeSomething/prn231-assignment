@@ -6,6 +6,7 @@ using WebAPI.Auth;
 using WebAPI.Base.Guard;
 using WebAPI.Base.Jwt;
 using WebAPI.Services;
+using WebAPI.DTOs.Resource;
 
 namespace WebAPI.Controllers
 {
@@ -67,7 +68,7 @@ namespace WebAPI.Controllers
             {
                 return NotFound($"class with id {classId} not found");
             }
-            if (fFile == null || fFile.Length == 0)
+            if (fFile == null)
             {
                 return BadRequest("file not submitted");
             }
@@ -81,7 +82,12 @@ namespace WebAPI.Controllers
             {
                 name = fFile.FileName;
             }
-            var path = GetStoragePath(name);
+            var path = GetStoragePath(classId, name);
+            var directory = Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
             using (var stream = new FileStream(path, FileMode.Create))
             {
                 await fFile.CopyToAsync(stream);
@@ -96,7 +102,7 @@ namespace WebAPI.Controllers
                 _context.SaveChanges();
                 return Ok(new
                 {
-                    message = "A file with similar name already existed. The file was overriden.",
+                    message = "A file with similar name already existed. The file was overwritten.",
                     file = _mapper.Map<ClassFileDto>(existingFile)
                 });
             }
@@ -117,6 +123,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpDelete("{resourceId}")]
+        [Roles(Role.Teacher, Role.Admin)]
         public async Task<IActionResult> DeleteResource(int resourceId)
         {
             var resource = await _context.ClassFiles.FindAsync(resourceId);
@@ -146,7 +153,7 @@ namespace WebAPI.Controllers
         private bool AuthorizeUser(int? classId = null, int? resourceId = null)
         {
             var userJwt = Request.GetUserJwt();
-            if(userJwt == null)
+            if (userJwt == null)
             {
                 return false;
             }
@@ -156,7 +163,7 @@ namespace WebAPI.Controllers
                 .ThenInclude(c => c.ClassFiles)
                 .FirstOrDefault(u => u.Id == userJwt.UserId);
 
-            if(user == null)
+            if (user == null)
             {
                 return false;
             }
@@ -174,6 +181,7 @@ namespace WebAPI.Controllers
             return true;
         }
 
-        private static string GetStoragePath(string fileName) => Path.Combine(Directory.GetCurrentDirectory(), "UserFiles", fileName);
+        private static string GetStoragePath(int classId, string fileName)
+            => Path.Combine(Directory.GetCurrentDirectory(), "UserFiles", "class-" + classId,  fileName);
     }
 }

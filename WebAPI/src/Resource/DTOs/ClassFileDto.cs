@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BusinessObject.Models
+namespace WebAPI.DTOs.Resource
 {
     public class ClassFileDto
     {
