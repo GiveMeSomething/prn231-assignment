@@ -1,9 +1,9 @@
 ﻿using BusinessObject.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Net.Http.Headers;
-using WebAPI.Auth.Jwt;
+using WebAPI.Base.Jwt;
 
-namespace WebAPI.Auth.Services
+namespace WebAPI.Base.Services
 {
     public class UserContextService : IUserContextService
     {

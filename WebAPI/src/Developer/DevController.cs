@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using WebAPI.Auth.Decorator;
-using WebAPI.Auth.Guards;
-using WebAPI.Auth.Jwt;
+using WebAPI.Auth;
+using WebAPI.Base.Guard;
+using WebAPI.Base.Jwt;
 
 namespace WebAPI.Controllers
 {
@@ -17,7 +14,7 @@ namespace WebAPI.Controllers
     {
         [Route("exec")]
         [HttpGet]
-        [Roles("student", "teacher")]
+        [Roles(Role.Admin, Role.Student, Role.Teacher)]
         public IActionResult ExecTest()
         {
             var testToken = CustomJwt.GenerateToken(new

@@ -4,21 +4,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using WebAPI.Auth.Services;
+using WebAPI.Auth;
+using WebAPI.Base.Guard;
+using WebAPI.Base.Jwt;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [UseGuard(typeof(AuthGuard))]
+    [UseGuard(typeof(RoleGuard))]
     public class ResourceController : ControllerBase
     {
-        private readonly AssignmentPRNContext _dbContext;
-        private readonly IUserContextService _userService;
+        private readonly AssignmentPRNContext _context;
+        private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
-        public ResourceController(AssignmentPRNContext context, IUserContextService service, IMapper mapper)
+        public ResourceController(AssignmentPRNContext context, IUserService service, IMapper mapper)
         {
-            _dbContext = context;
+            _context = context;
             _userService = service;
             _mapper = mapper;
         }
@@ -26,12 +31,12 @@ namespace WebAPI.Controllers
         [HttpGet("{resourceId}")]
         public IActionResult GetResource(int resourceId)
         {
-            if (!AuthorizeUser(false, resourceId: resourceId))
+            if (!AuthorizeUser(resourceId: resourceId))
             {
                 return Unauthorized();
             }
 
-            var cFile = _dbContext.ClassFiles.Where(f => f.Id == resourceId).FirstOrDefault();
+            var cFile = _context.ClassFiles.Where(f => f.Id == resourceId).FirstOrDefault();
             var content = System.IO.File.ReadAllBytes(cFile.FilePath);
 
             return File(content, cFile.ContentType, cFile.Name);
@@ -40,7 +45,7 @@ namespace WebAPI.Controllers
         [HttpGet("class/{classId}")]
         public async Task<ActionResult> GetClassFiles(int classId)
         {
-            if (await _dbContext.Classes.FindAsync(classId) == null)
+            if (await _context.Classes.FindAsync(classId) == null)
             {
                 return NotFound();
             }
@@ -50,16 +55,17 @@ namespace WebAPI.Controllers
                 return Unauthorized();
             }
 
-            var list = _dbContext.Classes.Where(c => c.Id == classId).FirstOrDefault().ClassFiles.ToList();
+            var list = _context.Classes.Where(c => c.Id == classId).FirstOrDefault().ClassFiles.ToList();
             list.ForEach(f => f.Class = null);
             return Ok(_mapper.Map<List<ClassFileDto>>(list));
         }
 
         [HttpPost("class/{classId}")]
-        public async Task<IActionResult> PostClassFiles([FromRoute] int classId, IFormFile fFile, string? name)
+        [Roles(Role.Teacher, Role.Admin)]
+        public async Task<IActionResult> UploadClassFiles([FromRoute] int classId, IFormFile fFile, string? name)
         {
             //Check inputs
-            if (await _dbContext.Classes.FindAsync(classId) == null)
+            if (await _context.Classes.FindAsync(classId) == null)
             {
                 return NotFound($"class with id {classId} not found");
             }
@@ -68,9 +74,7 @@ namespace WebAPI.Controllers
                 return BadRequest("file not submitted");
             }
 
-            //Authorize
-            var user = _userService.GetUser();
-            if (!AuthorizeUser(true, classId: classId))
+            if (!AuthorizeUser(classId: classId))
             {
                 return Unauthorized();
             }
@@ -85,13 +89,13 @@ namespace WebAPI.Controllers
                 await fFile.CopyToAsync(stream);
             }
 
-            var existingFile = await _dbContext.ClassFiles.Where(f => f.FilePath == path).FirstOrDefaultAsync();
+            var existingFile = await _context.ClassFiles.Where(f => f.FilePath == path).FirstOrDefaultAsync();
 
             if (existingFile != null)
             {
                 existingFile.ContentType = fFile.ContentType;
-                _dbContext.Attach(existingFile);
-                _dbContext.SaveChanges();
+                _context.Attach(existingFile);
+                _context.SaveChanges();
                 return Ok(new
                 {
                     message = "A file with similar name already existed. The file was overriden.",
@@ -107,8 +111,8 @@ namespace WebAPI.Controllers
                     FilePath = path,
                     ClassId = classId
                 };
-                _dbContext.Add(file);
-                _dbContext.SaveChanges();
+                _context.Add(file);
+                _context.SaveChanges();
                 file.Class = null;
                 return Ok(new { file = _mapper.Map<ClassFileDto>(file) });
             }
@@ -117,13 +121,13 @@ namespace WebAPI.Controllers
         [HttpDelete("{resourceId}")]
         public async Task<IActionResult> DeleteResource(int resourceId)
         {
-            var resource = await _dbContext.ClassFiles.FindAsync(resourceId);
+            var resource = await _context.ClassFiles.FindAsync(resourceId);
             if (resource == null)
             {
                 return NotFound();
             }
 
-            if (!AuthorizeUser(true, resourceId: resourceId))
+            if (!AuthorizeUser(resourceId: resourceId))
             {
                 return Unauthorized();
             }
@@ -131,8 +135,8 @@ namespace WebAPI.Controllers
             try
             {
                 System.IO.File.Delete(resource.FilePath);
-                _dbContext.Remove(resource);
-                _dbContext.SaveChanges();
+                _context.Remove(resource);
+                _context.SaveChanges();
                 return Ok();
             }
             catch (Exception e)
@@ -141,20 +145,19 @@ namespace WebAPI.Controllers
             }
         }
 
-        private bool AuthorizeUser(bool isModify, int? classId = null, int? resourceId = null)
+        private bool AuthorizeUser(int? classId = null, int? resourceId = null)
         {
-            var user = _userService.GetUser();
-            if (user == null)
+            var token = Request.GetBearerToken();
+            var userJwt = UserFromJwt.Parse(token);
+            var user = _context.Users
+                .Include(u => u.Classes)
+                .ThenInclude(c => c.ClassFiles)
+                .FirstOrDefault(u => u.Id == userJwt.UserId);
+
+            if(user == null)
             {
                 return false;
             }
-
-            if (isModify && user.Role != Role.Teacher && user.Role != Role.Admin)
-            {
-                return false;
-            }
-
-            _dbContext.Classes.Include(c => c.ClassFiles).ToList();
 
             if (classId != null && !user.Classes.Any(c => c.Id == classId))
             {
@@ -168,6 +171,6 @@ namespace WebAPI.Controllers
             return true;
         }
 
-        private string GetStoragePath(string fileName) => Path.Combine(Directory.GetCurrentDirectory(), "UserFiles", fileName);
+        private static string GetStoragePath(string fileName) => Path.Combine(Directory.GetCurrentDirectory(), "UserFiles", fileName);
     }
 }

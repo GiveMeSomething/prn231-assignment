@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using WebAPI.Auth.Jwt;
+using WebAPI.Base.Jwt;
 using WebAPI.DTOs.Auth;
 
 namespace WebAPI.Controllers

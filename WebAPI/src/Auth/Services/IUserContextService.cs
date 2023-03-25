@@ -1,6 +1,6 @@
 ﻿using BusinessObject.Models;
 
-namespace WebAPI.Auth.Services
+namespace WebAPI.Base.Services
 {
     public interface IUserContextService
     {

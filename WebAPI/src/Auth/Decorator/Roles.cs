@@ -1,5 +1,5 @@
 ﻿using System;
-namespace WebAPI.Auth.Decorator
+namespace WebAPI.Base.Decorator
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class Roles: Attribute

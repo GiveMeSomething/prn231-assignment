@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Filters;
-using WebAPI.Auth.Guards;
+using WebAPI.Base.Guard;
 
-namespace WebAPI.Auth.Decorator
+namespace WebAPI.Base.Decorator
 {
 	public class UseGuard: ActionFilterAttribute, IActionFilter
 	{
