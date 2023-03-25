@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
 using BusinessObject.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using WebAPI.Auth;
 using WebAPI.Base.Guard;
 using WebAPI.Base.Jwt;
@@ -50,7 +48,7 @@ namespace WebAPI.Controllers
                 return NotFound();
             }
 
-            if (!AuthorizeUser(false, classId: classId))
+            if (!AuthorizeUser(classId: classId))
             {
                 return Unauthorized();
             }
@@ -147,8 +145,12 @@ namespace WebAPI.Controllers
 
         private bool AuthorizeUser(int? classId = null, int? resourceId = null)
         {
-            var token = Request.GetBearerToken();
-            var userJwt = UserFromJwt.Parse(token);
+            var userJwt = Request.GetUserJwt();
+            if(userJwt == null)
+            {
+                return false;
+            }
+
             var user = _context.Users
                 .Include(u => u.Classes)
                 .ThenInclude(c => c.ClassFiles)
@@ -163,6 +165,7 @@ namespace WebAPI.Controllers
             {
                 return false;
             }
+
             if (resourceId != null && !user.Classes.Any(c => c.ClassFiles.Any(f => f.Id == resourceId)))
             {
                 return false;

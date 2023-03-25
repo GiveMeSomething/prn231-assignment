@@ -1,8 +1,9 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using WebAPI.Base.Decorator;
+using WebAPI.Auth;
+using WebAPI.Base.Jwt;
+using WebAPI.Services;
 
 namespace WebAPI.Base.Guard
 {
@@ -20,16 +21,20 @@ namespace WebAPI.Base.Guard
                 .GetCustomAttributes<Roles>()
                 .FirstOrDefault();
 
-            if (requiredRoles == null)
+            if (requiredRoles == null || requiredRoles.ValidRoles.Length == 0)
             {
                 return true;
             }
 
-            foreach (string role in requiredRoles.ValidRoles)
+            var token = context.HttpContext.Request.GetBearerToken();
+            var userRole = UserFromJwt.Parse(token).Role;
+
+            foreach (var role in requiredRoles.ValidRoles)
             {
-                // Check roles between JWT payload and endpoints allowed roles
-                Console.WriteLine(role);
-                return true;
+                if(userRole == role)
+                {
+                    return true;
+                }
             }
 
             return false;

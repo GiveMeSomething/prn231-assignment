@@ -45,13 +45,13 @@ namespace WebAPI.Controllers
 		[HttpPost]
 		public async Task<IActionResult> Signup(SignupDTO userInfo)
 		{
-            // Find user in database
+			// Find user in database
 
-            // Return error if existed
+			// Return error if existed
 
-            // If not, hash password and save into database
+			// If not, hash password and save into database
 
-            return new OkResult();
+			return new OkResult();
         }
 
         private static string GetHash(string input)

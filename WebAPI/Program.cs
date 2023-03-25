@@ -1,16 +1,19 @@
 ﻿using BusinessObject.Models;
-using WebAPI.Auth.Services;
 using WebAPI.AutoMapper.Profiles;
+using WebAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Support both gRPC services and controllers
 builder.Services.AddControllers();
 
-builder.Services.AddHttpContextAccessor();
-
+// Database context
 builder.Services.AddScoped<AssignmentPRNContext>();
-builder.Services.AddTransient<IUserContextService, UserContextService>();
+
+// Server services DI config
+builder.Services.AddScoped<IUserService, UserService>();
+
+// Auto mapper config
 builder.Services.AddAutoMapper(typeof(ResourceProfile));
 
 // Swagger stuffs

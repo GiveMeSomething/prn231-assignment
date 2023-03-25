@@ -2,7 +2,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
-using WebAPI.Base.Decorator;
+using WebAPI.Base.Guard;
 
 namespace WebAPI.Base.Guard
 {

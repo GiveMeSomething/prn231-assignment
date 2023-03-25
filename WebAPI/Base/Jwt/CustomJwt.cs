@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 
-namespace WebAPI.Auth.Jwt
+namespace WebAPI.Base.Jwt
 {
     public class CustomJwt
     {
@@ -51,36 +51,6 @@ namespace WebAPI.Auth.Jwt
             tokenHandler.ValidateToken(token, validationOpts, out var validatedToken);
 
             return true;
-        }
-
-        public static JwtSecurityToken? ReadToken(string token)
-        {
-            if (token.IsNullOrEmpty())
-            {
-                return null;
-            }
-
-            if (string.IsNullOrEmpty(_secretKey))
-            {
-                LoadConfig();
-            }
-
-            if (!ValidateToken(token))
-            {
-                return null;
-            }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-
-            try
-            {
-                return tokenHandler.ReadJwtToken(token);
-            }
-            catch (SecurityTokenException e)
-            {
-                Console.WriteLine("Token is invalid" + e.Message);
-                return null;
-            }
         }
 
         // Load secret key from appsettings.json

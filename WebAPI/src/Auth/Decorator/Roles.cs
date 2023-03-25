@@ -1,12 +1,14 @@
 ﻿using System;
-namespace WebAPI.Base.Decorator
+using BusinessObject.Models;
+
+namespace WebAPI.Auth
 {
     [AttributeUsage(AttributeTargets.Method)]
     public class Roles: Attribute
 	{
-        public string[] ValidRoles { get; }
+        public Role[] ValidRoles { get; }
 
-        public Roles(params string[] roles)
+        public Roles(params Role[] roles)
         {
             ValidRoles = roles;
         }

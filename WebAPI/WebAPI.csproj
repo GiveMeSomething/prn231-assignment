@@ -23,23 +23,34 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Auth\" />
-    <None Remove="Auth\Decorator\" />
     <None Remove="Auth\Middleware\" />
-    <None Remove="Controllers\" />
     <None Remove="Auth\JWT\" />
     <None Remove="Utils\" />
-    <None Remove="DTOs\" />
-    <None Remove="DTOs\Auth\" />
+    <None Remove="src\" />
+    <None Remove="base\Jwt\" />
+    <None Remove="Base\Guard\" />
+    <None Remove="src\Auth\" />
+    <None Remove="src\Auth\DTOs\" />
+    <None Remove="src\Auth\Services\" />
+    <None Remove="src\User\" />
+    <None Remove="src\User\Services\" />
+    <None Remove="src\User\DTOs\" />
+    <None Remove="src\Resource\" />
+    <None Remove="src\Developer\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Auth\" />
-    <Folder Include="Auth\Decorator\" />
-    <Folder Include="Auth\Guards\" />
-    <Folder Include="Controllers\" />
     <Folder Include="UserFiles\" />
     <Folder Include="Utils\" />
-    <Folder Include="DTOs\" />
-    <Folder Include="DTOs\Auth\" />
+    <Folder Include="src\" />
+    <Folder Include="Base\Jwt\" />
+    <Folder Include="Base\Guard\" />
+    <Folder Include="src\Auth\" />
+    <Folder Include="src\Auth\DTOs\" />
+    <Folder Include="src\Auth\Services\" />
+    <Folder Include="src\User\" />
+    <Folder Include="src\User\Services\" />
+    <Folder Include="src\User\DTOs\" />
+    <Folder Include="src\Resource\" />
+    <Folder Include="src\Developer\" />
   </ItemGroup>
 </Project>
