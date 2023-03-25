@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Security.Cryptography;
 using System.Text;
+using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Auth;
 using WebAPI.Base.Jwt;
+using WebAPI.DTOs;
 using WebAPI.DTOs.Auth;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
@@ -12,38 +16,49 @@ namespace WebAPI.Controllers
 	[ApiController]
 	public class AuthController
 	{
-		// TODO: Fix this to our DbContext later
-		private readonly DbContext _context;
+		private readonly AssignmentPRNContext _context;
 
-		public AuthController(DbContext context)
+		public AuthController(AssignmentPRNContext context, IUserService userService)
 		{
 			_context = context;
 		}
 
 		[Route("login")]
 		[HttpPost]
-		public async Task<ActionResult<string>> Login(LoginDTO userInfo)
+		public ActionResult<string> Login(LoginDTO userInfo)
 		{
 			// Find user in database
-
-			// Return error if non-existent
+			var foundUser = _context.Users.FirstOrDefault(u => u.Email == userInfo.Email);
+			if(foundUser == null)
+			{
+				return new BadRequestObjectResult(new
+				{
+					Message = "Wrong email and password combination. Please try again"
+				});
+			}
 
 			// If not, hash password and compare
-
-			// Return error if wrong password
+			var hashPassword = GetHash(userInfo.Password);
+			if(foundUser.Password != hashPassword)
+			{
+                return new BadRequestObjectResult(new
+                {
+                    Message = "Wrong email and password combination. Please try again"
+                });
+            }
 
 			// Return token
-			var token = CustomJwt.GenerateToken(new
+			return CustomJwt.GenerateToken<UserJwt>(new UserJwt
 			{
-				Email = "testing@test.com",
-				FullName = "Hoang Tien Minh"
+				UserId = foundUser.Id,
+				Role = foundUser.Role
 			});
-			return token;
         }
 
         [Route("signup")]
 		[HttpPost]
-		public async Task<IActionResult> Signup(SignupDTO userInfo)
+		[Roles(Role.Admin)]
+		public IActionResult Signup(SignupDTO userInfo)
 		{
 			// Find user in database
 
@@ -55,13 +70,13 @@ namespace WebAPI.Controllers
         }
 
         private static string GetHash(string input)
-		{
-			using(var algo = SHA256.Create())
-			{
-				var hash = algo.ComputeHash(Encoding.UTF8.GetBytes(input));
-				return Encoding.UTF8.GetString(hash);
-			}
-		}
-	}
+        {
+            using (var algo = SHA256.Create())
+            {
+                var hash = algo.ComputeHash(Encoding.UTF8.GetBytes(input));
+                return Convert.ToBase64String(hash);
+            }
+        }
+    }
 }
 

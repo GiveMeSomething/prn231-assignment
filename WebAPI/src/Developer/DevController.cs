@@ -1,28 +1,47 @@
-﻿using BusinessObject.Models;
+﻿using System.Security.Cryptography;
+using System.Text;
+using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using WebAPI.Auth;
 using WebAPI.Base.Guard;
 using WebAPI.Base.Jwt;
+using WebAPI.DTOs;
+using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
     [Route("api/dev")]
     [ApiController]
-    [UseGuard(typeof(AuthGuard))]
-    [UseGuard(typeof(RoleGuard))]
     public class DevController : Controller
     {
         [Route("exec")]
         [HttpGet]
-        [Roles(Role.Admin, Role.Student, Role.Teacher)]
         public IActionResult ExecTest()
         {
-            var testToken = CustomJwt.GenerateToken(new
-            {
-                Data = "Hello World"
-            });
+            var password = "testing123";
+            return Ok(GetHash(password));
+        }
 
-            return Ok(testToken);
+        [Route("token/{id}/{token}")]
+        [HttpGet]
+        public ActionResult<string> GetDevToken(int id, int role)
+        {
+            var userJwt = new UserJwt
+            {
+                UserId = 1,
+                Role = (Role)role
+            };
+
+            return CustomJwt.GenerateToken<UserJwt>(userJwt);
+        }
+
+        private static string GetHash(string input)
+        {
+            using (var algo = SHA256.Create())
+            {
+                var hash = algo.ComputeHash(Encoding.UTF8.GetBytes(input));
+                return Convert.ToBase64String(hash);
+            }
         }
     }
 }
