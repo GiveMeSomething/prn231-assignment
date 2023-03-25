@@ -27,6 +27,11 @@ namespace WebAPI.Base.Guard
             }
 
             var token = context.HttpContext.Request.GetBearerToken();
+            if(token == null)
+            {
+                return false;
+            }
+
             var userRole = UserFromJwt.Parse(token).Role;
 
             foreach (var role in requiredRoles.ValidRoles)

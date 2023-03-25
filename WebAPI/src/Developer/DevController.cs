@@ -35,6 +35,12 @@ namespace WebAPI.Controllers
             return CustomJwt.GenerateToken<UserJwt>(userJwt);
         }
 
+        [HttpGet("hash/{password}")]
+        public ActionResult<string> GetPasswordHash(string password)
+        {
+            return GetHash(password);
+        }
+
         private static string GetHash(string input)
         {
             using (var algo = SHA256.Create())
