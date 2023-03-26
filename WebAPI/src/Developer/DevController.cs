@@ -13,6 +13,8 @@ namespace WebAPI.Controllers
 {
     [Route("api/dev")]
     [ApiController]
+    [UseGuard(typeof(AuthGuard))]
+    [UseGuard(typeof(RoleGuard))]
     public class DevController : Controller
     {
         private readonly StorageClient _storageClient;
@@ -24,33 +26,12 @@ namespace WebAPI.Controllers
             _storageClient = storageClient;
         }
 
+        [Roles(Role.Admin)]
         [Route("exec")]
         [HttpPost]
-        public async Task<IActionResult> ExecTest([FromForm] IFormFile file)
+        public async Task<IActionResult> ExecTest()
         {
-            var objectName = "uploads/test2";
-
-            // Upload file
-            using (var stream = file.OpenReadStream())
-            {
-                await _storageClient.UploadObjectAsync(_bucketName, objectName, null, stream);
-            }
-
-            var url = $"https://storage.googleapis.com/{_bucketName}/{objectName}";
-
-            // Download file
-            using (var stream = new MemoryStream())
-            {
-                _storageClient.DownloadObject(_bucketName, objectName, stream);
-
-                // Set the position of the stream to the beginning
-                stream.Seek(0, SeekOrigin.Begin);
-
-                var reader = new StreamReader(stream);
-                var content = reader.ReadToEnd();
-
-                return Ok(content);
-            }
+            return Ok("Hello World");
         }
 
         [Route("token/{id}/{token}")]
@@ -78,6 +59,31 @@ namespace WebAPI.Controllers
             {
                 var hash = algo.ComputeHash(Encoding.UTF8.GetBytes(input));
                 return Convert.ToBase64String(hash);
+            }
+        }
+
+        private async void DemoFirebase(IFormFile file)
+        {
+            var objectName = "uploads/test2";
+
+            // Upload file
+            using (var stream = file.OpenReadStream())
+            {
+                await _storageClient.UploadObjectAsync(_bucketName, objectName, null, stream);
+            }
+
+            var url = $"https://storage.googleapis.com/{_bucketName}/{objectName}";
+
+            // Download file
+            using (var stream = new MemoryStream())
+            {
+                _storageClient.DownloadObject(_bucketName, objectName, stream);
+
+                // Set the position of the stream to the beginning
+                stream.Seek(0, SeekOrigin.Begin);
+
+                var reader = new StreamReader(stream);
+                var content = reader.ReadToEnd();
             }
         }
     }

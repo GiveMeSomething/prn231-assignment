@@ -28,6 +28,20 @@ namespace WebAPI.Base.Jwt
             return null;
         }
 
+        // TODO: Refactor this later
+        public static string GetBearerToken(this HttpRequest request, bool getString)
+        {
+            var authorizations = request.Headers["Authorization"];
+            // Should be only 1 token in request
+            var authHeader = authorizations[0];
+            if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))
+            {
+                return authHeader.Substring("Bearer ".Length).Trim();
+            }
+
+            return "";
+        }
+
         public static UserJwt? GetUserJwt(this HttpRequest request)
         {
             var token = request.GetBearerToken();
