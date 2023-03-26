@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using FAPortal.Utils;
+using Newtonsoft.Json.Linq;
 
 namespace FAPortal.Client
 {
@@ -16,12 +17,12 @@ namespace FAPortal.Client
             Client = new();
         }
 
-        public async Task<HttpResponseMessage> GetAsync<T>(string requestUri, T body, bool includeToken = false)
+        public async Task<HttpResponseMessage> GetAsync(string requestUri, string token = "")
         {
-            if (includeToken)
+            if (!string.IsNullOrEmpty(token))
             {
                 Client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", GetTokenForUser(1));
+                    new AuthenticationHeaderValue("Bearer", token);
             }
 
             var uri = new Uri(_basePath + requestUri);
@@ -29,7 +30,7 @@ namespace FAPortal.Client
             return response;
         }
 
-        public async Task<HttpResponseMessage> PostAsync<T>(string requestUri, T body, bool includeToken = false)
+        public async Task<HttpResponseMessage> PostAsync<T>(string requestUri, T body, string token = "")
         {
             var jsonBody = CustomJson.Stringify(body);
             var httpContent = new StringContent(jsonBody, Encoding.UTF8, "application/json");
@@ -38,10 +39,10 @@ namespace FAPortal.Client
             httpContent.Headers.ContentType =
                 new MediaTypeHeaderValue("application/json");
 
-            if (includeToken)
+            if (!string.IsNullOrEmpty(token))
             {
                 Client.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", GetTokenForUser(1));
+                    new AuthenticationHeaderValue("Bearer", token);
             }
 
             var uri = new Uri(_basePath + requestUri);

@@ -13,6 +13,8 @@
     <None Remove="Controllers\Auth\DTOs\" />
     <None Remove="Utils\" />
     <None Remove="DTOs\" />
+    <None Remove="Controllers\Admin\" />
+    <None Remove="Views\Admin\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Auth\" />
@@ -21,6 +23,8 @@
     <Folder Include="Controllers\Auth\DTOs\" />
     <Folder Include="Utils\" />
     <Folder Include="DTOs\" />
+    <Folder Include="Controllers\Admin\" />
+    <Folder Include="Views\Admin\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BusinessObject\BusinessObject.csproj">
