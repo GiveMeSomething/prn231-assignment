@@ -6,4 +6,20 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Views\Auth\" />
+    <None Remove="Client\" />
+    <None Remove="Controllers\Auth\" />
+    <None Remove="Controllers\Auth\DTOs\" />
+    <None Remove="Utils\" />
+    <None Remove="DTOs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Auth\" />
+    <Folder Include="Client\" />
+    <Folder Include="Controllers\Auth\" />
+    <Folder Include="Controllers\Auth\DTOs\" />
+    <Folder Include="Utils\" />
+    <Folder Include="DTOs\" />
+  </ItemGroup>
 </Project>

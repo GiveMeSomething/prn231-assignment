@@ -33,7 +33,16 @@ builder.Services.AddAutoMapper(typeof(AuthProfile));
 // Swagger stuffs
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors();
+
 var app = builder.Build();
+
+app.UseCors(opts =>
+{
+    opts.AllowAnyHeader();
+    opts.AllowAnyMethod();
+    opts.AllowAnyOrigin();
+});
 
 app.MapControllers();
 
