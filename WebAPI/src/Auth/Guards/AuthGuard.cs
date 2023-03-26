@@ -2,7 +2,10 @@
 using System.Reflection;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
+using WebAPI.Auth;
 using WebAPI.Base.Guard;
+using WebAPI.Base.Jwt;
+using WebAPI.Services;
 
 namespace WebAPI.Base.Guard
 {
@@ -10,7 +13,17 @@ namespace WebAPI.Base.Guard
     {
         public override bool canActivate(ActionExecutingContext context)
         {
-            return true;
+            if (context == null || context.ActionDescriptor == null)
+            {
+                return false;
+            }
+
+            var token = context.HttpContext.Request.GetBearerToken(true);
+            if (token == null)
+            {
+                return false;
+            }
+            return CustomJwt.ValidateToken(token);
         }
     }
 }

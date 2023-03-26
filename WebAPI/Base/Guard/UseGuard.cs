@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Reflection;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace WebAPI.Base.Guard
 {
-	public class UseGuard: ActionFilterAttribute, IActionFilter
+	public class UseGuard: ActionFilterAttribute
 	{
         private readonly Type _guard;
 
@@ -18,7 +19,7 @@ namespace WebAPI.Base.Guard
 			_guard = guard;
 		}
 
-        public async override void OnActionExecuting(ActionExecutingContext context)
+        public override void OnActionExecuting(ActionExecutingContext context)
         {
             // Create instance of CanActivate
             var guard = Activator.CreateInstance(_guard) as CanActivate;
@@ -30,23 +31,13 @@ namespace WebAPI.Base.Guard
             // Check if current route can continue
             if (!guard.canActivate(context))
             {
-                // Set response status code
-                context.HttpContext.Response.StatusCode = StatusCodes.Status403Forbidden;
-
-                // Set response content
-                context.HttpContext.Response.ContentType = "application/json";
-                await context.HttpContext.Response.WriteAsJsonAsync(new
-                {
-                    Message = "You are not allowed to access this endpoint"
-                });
-
+                context.Result = new StatusCodeResult(StatusCodes.Status403Forbidden);
                 return;
             }
         }
 
         public override void OnActionExecuted(ActionExecutedContext context)
         {
-            return;
         }
     }
 }
