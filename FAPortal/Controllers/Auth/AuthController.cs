@@ -62,7 +62,7 @@ namespace FAPortal.Controllers
                 SameSite = SameSiteMode.Strict
             });
 
-            return Redirect("/");
+            return Redirect("Class");
         }
     }
 }

@@ -27,6 +27,9 @@
     <Folder Include="Views\Admin\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="wwwroot\css\class.css" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\BusinessObject\BusinessObject.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
