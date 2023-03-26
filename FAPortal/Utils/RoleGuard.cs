@@ -35,11 +35,6 @@ namespace FAPortal.Utils.Guard
                     return false;
                 }
 
-                if(!CustomJwt.ValidateToken(token))
-                {
-                    return false;
-                }
-
                 var handler = new JwtSecurityTokenHandler();
                 var claims = handler.ReadJwtToken(token).Claims;
 
