@@ -26,6 +26,6 @@ namespace BusinessObject.Models
         public int ClassId { get; set; }
 
         [ForeignKey("ClassId")]
-        public Class Class { get; set; }
+        public Class? Class { get; set; }
     }
 }

@@ -40,17 +40,24 @@ namespace WebAPI.Base.Jwt
 
         public static bool ValidateToken(string token)
         {
-            if (string.IsNullOrEmpty(_secretKey))
+            try
             {
-                LoadConfig();
+                if (string.IsNullOrEmpty(_secretKey))
+                {
+                    LoadConfig();
+                }
+
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var validationOpts = GetValidationParameters();
+
+                tokenHandler.ValidateToken(token, validationOpts, out var validatedToken);
+
+                return true;
             }
-
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var validationOpts = GetValidationParameters();
-
-            tokenHandler.ValidateToken(token, validationOpts, out var validatedToken);
-
-            return true;
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         // Load secret key from appsettings.json

@@ -27,7 +27,7 @@ namespace BusinessObject.Models
         [Required]
         public string Password { get; set; }
 
-        public IList<Class> Classes { get; set; }
+        public IList<Class>? Classes { get; set; }
     }
 
     // DO NOT CHANGE

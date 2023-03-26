@@ -39,22 +39,16 @@
     <None Remove="src\User\DTOs\" />
     <None Remove="src\Resource\" />
     <None Remove="src\Developer\" />
-    <None Remove="src\Firebase\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="UserFiles\" />
     <Folder Include="Utils\" />
-    <Folder Include="src\" />
     <Folder Include="Base\Jwt\" />
     <Folder Include="Base\Guard\" />
     <Folder Include="src\Auth\" />
     <Folder Include="src\Auth\DTOs\" />
     <Folder Include="src\Auth\Services\" />
-    <Folder Include="src\User\" />
     <Folder Include="src\User\Services\" />
     <Folder Include="src\User\DTOs\" />
-    <Folder Include="src\Resource\" />
     <Folder Include="src\Developer\" />
-    <Folder Include="src\Firebase\" />
   </ItemGroup>
 </Project>

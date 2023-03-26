@@ -29,6 +29,8 @@ builder.Services.AddSingleton<StorageClient>(StorageClient.Create(credential));
 // Auto mapper config
 builder.Services.AddAutoMapper(typeof(ResourceProfile));
 builder.Services.AddAutoMapper(typeof(AuthProfile));
+builder.Services.AddAutoMapper(typeof(UserProfile));
+builder.Services.AddAutoMapper(typeof(ClassProfile));
 
 // Swagger stuffs
 builder.Services.AddSwaggerGen();
