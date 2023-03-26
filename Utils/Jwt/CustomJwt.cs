@@ -2,9 +2,11 @@
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Utils.Json;
 
-namespace WebAPI.Base.Jwt
+namespace Utils.Jwt
 {
     public class CustomJwt
     {
@@ -58,6 +60,15 @@ namespace WebAPI.Base.Jwt
             {
                 return false;
             }
+        }
+
+        public static T? GetPayload<T>(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            var decoded = handler.ReadJwtToken(token);
+
+            var jsonPayload = CustomJson.Stringify(decoded.Payload);
+            return CustomJson.Deserialzie<T>(jsonPayload);
         }
 
         // Load secret key from appsettings.json

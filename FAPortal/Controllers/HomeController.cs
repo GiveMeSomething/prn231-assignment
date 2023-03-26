@@ -1,9 +1,13 @@
 ﻿using System.Diagnostics;
+using BusinessObject.Models;
+using FAPortal.Utils;
+using FAPortal.Utils.Guard;
 using Microsoft.AspNetCore.Mvc;
-using FAPortal.Models;
+using WebAPI.Base.Guard;
 
 namespace FAPortal.Controllers;
 
+[UseGuard(typeof(RoleGuard))]
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -21,12 +25,6 @@ public class HomeController : Controller
     public IActionResult Login()
     {
         return Redirect("/auth/login");
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }
 

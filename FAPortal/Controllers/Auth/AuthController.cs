@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using FAPortal.Utils;
 using System.Text;
 using FAPortal.Client;
+using WebAPI.Base.Guard;
+using FAPortal.Utils.Guard;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -52,7 +54,7 @@ namespace FAPortal.Controllers
 
             var token = await response.Content.ReadAsStringAsync();
 
-            Response.Cookies.Append("jwtToken", token, new CookieOptions
+            Response.Cookies.Append("jwt", token, new CookieOptions
             {
                 Expires = DateTime.Now.AddDays(1),
                 HttpOnly = true,

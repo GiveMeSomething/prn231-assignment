@@ -1,11 +1,6 @@
-﻿using System;
-using System.Reflection;
-using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.Mvc.Filters;
-using WebAPI.Auth;
-using WebAPI.Base.Guard;
+﻿using Microsoft.AspNetCore.Mvc.Filters;
+using Utils.DotNest.Guard;
 using WebAPI.Base.Jwt;
-using WebAPI.Services;
 
 namespace WebAPI.Base.Guard
 {

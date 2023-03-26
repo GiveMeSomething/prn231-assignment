@@ -1,11 +1,11 @@
-﻿using System;
-using System.Reflection;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Utils.DotNest.Guard;
 
 namespace WebAPI.Base.Guard
 {
-	public class UseGuard: ActionFilterAttribute
+    public class UseGuard: ActionFilterAttribute
 	{
         private readonly Type _guard;
 
