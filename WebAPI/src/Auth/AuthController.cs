@@ -84,6 +84,7 @@ namespace WebAPI.Controllers
 				Password = hashPwd,
 				Role = adminSignup.Role
 			});
+			_context.SaveChanges();
 			return new OkResult();
         }
 

@@ -7,6 +7,7 @@ using WebAPI.Auth;
 using WebAPI.AutoMapper.Models;
 using WebAPI.Base.Guard;
 using WebAPI.Base.Jwt;
+using WebAPI.DTOs;
 
 namespace WebAPI.Controllers
 {

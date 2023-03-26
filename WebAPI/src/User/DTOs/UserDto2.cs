@@ -1,6 +1,6 @@
 ﻿using BusinessObject.Models;
 
-namespace WebAPI.AutoMapper.Models
+namespace WebAPI.DTOs
 {
     /// <summary>
     /// UserDto with password

@@ -29,9 +29,14 @@ namespace WebAPI.Base.Jwt
         }
 
         // TODO: Refactor this later
-        public static string GetBearerToken(this HttpRequest request, bool getString)
+        public static string? GetBearerToken(this HttpRequest request, bool getString)
         {
             var authorizations = request.Headers["Authorization"];
+            if (authorizations.Count == 0)
+            {
+                return null;
+            }
+
             // Should be only 1 token in request
             var authHeader = authorizations[0];
             if (!string.IsNullOrEmpty(authHeader) && authHeader.StartsWith("Bearer "))

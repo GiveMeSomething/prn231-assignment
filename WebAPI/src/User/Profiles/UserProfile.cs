@@ -5,11 +5,12 @@ using WebAPI.DTOs;
 
 namespace WebAPI.AutoMapper.Profiles
 {
-    public class ResourceProfile : Profile
+    public class UserProfile : Profile
     {
-        public ResourceProfile()
+        public UserProfile()
         {
-            CreateMap<ClassFile, ClassFileDto>();
+            CreateMap<User, UserDto>();
+            CreateMap<User, UserDto2>().ReverseMap();
         }
     }
 }

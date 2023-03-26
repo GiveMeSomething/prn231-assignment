@@ -16,7 +16,7 @@ namespace BusinessObject.Models
         [Required]
         public string Name { get; set; }
 
-        public ICollection<ClassFile> ClassFiles { get; set; }
+        public ICollection<ClassFile>? ClassFiles { get; set; }
 
         public IList<User>? Members { get; set; }
     }

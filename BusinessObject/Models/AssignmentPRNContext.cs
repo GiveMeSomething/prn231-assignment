@@ -23,7 +23,6 @@ namespace BusinessObject.Models
 
         public DbSet<Class> Classes { get; set; }
         public DbSet<ClassFile> ClassFiles { get; set; }
-
         public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

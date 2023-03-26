@@ -2,11 +2,10 @@
 
 namespace WebAPI.DTOs
 {
-    public class UserDto
+    public class ClassDto
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public String Role { get; set; }
-        public string Email { get; set; }
+        public IList<UserDto>? Members { get; set; }
     }
 }

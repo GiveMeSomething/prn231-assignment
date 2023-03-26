@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using WebAPI.Auth;
 using WebAPI.Base.Guard;
 using WebAPI.Base.Jwt;
-using WebAPI.Services;
-using WebAPI.DTOs.Resource;
+using WebAPI.DTOs;
+using WebAPI.src.Resource;
 
 namespace WebAPI.Controllers
 {
@@ -21,7 +21,6 @@ namespace WebAPI.Controllers
         private readonly AssignmentPRNContext _context;
         private readonly IMapper _mapper;
 
-        private const string _bucketName = "prn231assignment.appspot.com";
 
         public ResourceController(
             AssignmentPRNContext context,
@@ -35,17 +34,31 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("{resourceId}")]
-        public IActionResult GetResource(int resourceId)
+        public async Task<IActionResult> GetResource(int resourceId)
         {
+            var cFile = _context.ClassFiles.Where(f => f.Id == resourceId).FirstOrDefault();
+            if (cFile == null)
+            {
+                return NotFound();
+            }
+
             if (!AuthorizeUser(resourceId: resourceId))
             {
                 return Unauthorized();
             }
 
-            var cFile = _context.ClassFiles.Where(f => f.Id == resourceId).FirstOrDefault();
-            var content = System.IO.File.ReadAllBytes(cFile.FilePath);
+            using (var stream = new MemoryStream())
+            {
+                await _firebaseStorage.DownloadObjectAsync(Resource.BucketName, Resource.GetStoragePath(cFile.Id), stream);
 
-            return File(content, cFile.ContentType, cFile.Name);
+                // Set the position of the stream to the beginning
+                stream.Seek(0, SeekOrigin.Begin);
+
+                var reader = new BinaryReader(stream);
+                var content = reader.ReadBytes((int)stream.Length);
+                return File(content, cFile.ContentType, cFile.Name);
+            }
+
         }
 
         [HttpGet("class/{classId}")]
@@ -61,8 +74,8 @@ namespace WebAPI.Controllers
                 return Unauthorized();
             }
 
-            var list = _context.Classes.Where(c => c.Id == classId).FirstOrDefault().ClassFiles.ToList();
-            list.ForEach(f => f.Class = null);
+            var list = _context.Classes.Include(c => c.ClassFiles)
+                .Where(c => c.Id == classId).FirstOrDefault().ClassFiles.ToList();
             return Ok(_mapper.Map<List<ClassFileDto>>(list));
         }
 
@@ -90,49 +103,48 @@ namespace WebAPI.Controllers
                 name = fFile.FileName;
             }
 
-            var objectName = "uploads/" + name;
+            var existingFile = await _context.ClassFiles
+                .Where(f => f.ClassId == classId && f.Name == name)
+                .FirstOrDefaultAsync();
 
-            using(var stream = fFile.OpenReadStream())
+            string path = "";
+
+            if (existingFile != null)
             {
-                await _firebaseStorage.UploadObjectAsync(_bucketName, objectName, null, stream);
+                existingFile.ContentType = fFile.ContentType;
+                _context.Attach(existingFile);
+                _context.SaveChanges();
+                using (var stream = fFile.OpenReadStream())
+                {
+                    await _firebaseStorage.UploadObjectAsync(Resource.BucketName, Resource.GetStoragePath(existingFile.Id), null, stream);
+                }
+                return Ok(new
+                {
+                    message = "A file with similar name already existed. The file will be overwritten.",
+                    file = _mapper.Map<ClassFileDto>(existingFile)
+                });
+            }
+            else
+            {
+                var file = new ClassFile()
+                {
+                    Name = name,
+                    ContentType = fFile.ContentType,
+                    FilePath = path,
+                    ClassId = classId
+                };
+                _context.Add(file);
+                _context.SaveChanges();
+                using (var stream = fFile.OpenReadStream())
+                {
+                    await _firebaseStorage.UploadObjectAsync(Resource.BucketName, Resource.GetStoragePath(file.Id), null, stream);
+                }
+                file.Class = null;
+                return Ok(new { file = _mapper.Map<ClassFileDto>(file) });
             }
 
-            //var path = GetStoragePath(name);
-            //using (var stream = new FileStream(path, FileMode.Create))
-            //{
-            //    await fFile.CopyToAsync(stream);
-            //}
-
-            //var existingFile = await _context.ClassFiles.Where(f => f.FilePath == path).FirstOrDefaultAsync();
-
-            //if (existingFile != null)
-            //{
-            //    existingFile.ContentType = fFile.ContentType;
-            //    _context.Attach(existingFile);
-            //    _context.SaveChanges();
-            //    return Ok(new
-            //    {
-            //        message = "A file with similar name already existed. The file was overriden.",
-            //        file = _mapper.Map<ClassFileDto>(existingFile)
-            //    });
-            //}
-            //else
-            //{
-            //    var file = new ClassFile()
-            //    {
-            //        Name = name,
-            //        ContentType = fFile.ContentType,
-            //        FilePath = path,
-            //        ClassId = classId
-            //    };
-            //    _context.Add(file);
-            //    _context.SaveChanges();
-            //    file.Class = null;
-            //    return Ok(new { file = _mapper.Map<ClassFileDto>(file) });
-            //}
-
-            var url = $"https://storage.googleapis.com/{_bucketName}/{objectName}";
-            return Ok(url);
+            //var url = $"https://storage.googleapis.com/{BucketName}/{objectName}";
+            //return Ok(url);
         }
 
         [HttpDelete("{resourceId}")]
@@ -181,6 +193,11 @@ namespace WebAPI.Controllers
                 return false;
             }
 
+            if (user.Role == Role.Admin)
+            {
+                return true;
+            }
+
             if (classId != null && !user.Classes.Any(c => c.Id == classId))
             {
                 return false;
@@ -193,8 +210,5 @@ namespace WebAPI.Controllers
 
             return true;
         }
-
-        private static string GetStoragePath(int classId, string fileName)
-            => Path.Combine(Directory.GetCurrentDirectory(), "UserFiles", "class-" + classId,  fileName);
     }
 }
