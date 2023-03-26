@@ -1,0 +1,27 @@
+﻿@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-6 offset-3">
+            <form class="d-flex flex-column justify-content-center" method="POST" asp-controller="Auth" asp-action="LoginToServer">
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="email" name="Email" aria-describedby="emailHelp">
+                    <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" class="form-control" id="password" name="Password">
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+                @if (ViewData["Error"] != null)
+                {
+                    <p class="text-danger pt-2">@ViewData["Error"]</p>
+                }
+            </form>
+        </div>
+    </div>
+</div>
+
