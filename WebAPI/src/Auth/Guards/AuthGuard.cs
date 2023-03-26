@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
 using Utils.DotNest.Guard;
+using Utils.Jwt;
 using WebAPI.Base.Jwt;
 
 namespace WebAPI.Base.Guard

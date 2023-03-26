@@ -5,6 +5,7 @@ using AutoMapper;
 using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Utils.Jwt;
 using WebAPI.Auth;
 using WebAPI.AutoMapper.Models;
 using WebAPI.Base.Jwt;
