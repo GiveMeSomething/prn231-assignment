@@ -1,0 +1,63 @@
+﻿@using FAPortal.DTOs
+@model List<ClassFileDto>
+@{
+    string? role = (string?)ViewData["Role"];
+    int? classId = (int?)ViewData["ClassId"];
+}
+
+<link href="css/class.css" rel="stylesheet" />
+
+<div id="main-content" class="file_manager">
+    <div class="container">
+        <div class="row clearfix">
+            @if (Model != null && Model.Count > 0)
+            {
+                foreach (var f in Model)
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-12">
+                        <div class="card">
+                            <div class="file">
+                                <a href="File/Download?fileId=@f.Id" style="text-decoration:none" download>
+                                    @if (role == "admin" || role == "teacher")
+                                    {
+                                        <div class="hover">
+                                            <button type="button" class="btn btn-icon btn-danger">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    <div class="icon">
+                                        <i class="fa fa-file text-info"></i>
+                                    </div>
+                                    <div class="file-name">
+                                        <p class="m-b-5 text-muted">@(f.Name)</p>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                @*@if (role == "admin" || role == "teacher")
+                {
+                    <div class="col-lg-3 col-md-4 col-sm-12">
+                        <div class="card">
+                            <div class="file">
+                                <div>
+                                    <form action="File/Upload" method="post">
+                                        <input type="hidden" id="classId" value="@classId">
+                                        <input type="file" id="file">
+                                        <input type="text" id="fileName">
+                                        <input type="submit">
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }*@
+            }
+
+        </div>
+    </div>
+</div>
+<script src="https://kit.fontawesome.com/5415fcb153.js" crossorigin="anonymous"></script>

@@ -50,10 +50,17 @@ namespace FAPortal.Client
 
             return response;
         }
-
-        private static string GetTokenForUser(int userId)
+        public async Task<HttpResponseMessage> DeleteAsync(string requestUri, string token = "")
         {
-            return "";
+            if (!string.IsNullOrEmpty(token))
+            {
+                Client.DefaultRequestHeaders.Authorization =
+                    new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var uri = new Uri(_basePath + requestUri);
+            var response = await Client.DeleteAsync(uri);
+            return response;
         }
     }
 }
