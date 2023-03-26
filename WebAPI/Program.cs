@@ -3,6 +3,7 @@ using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using WebAPI.AutoMapper.Profiles;
+using WebAPI.Base;
 using WebAPI.Services;
 
 // Firebase config
@@ -14,8 +15,16 @@ var firebaseApp = FirebaseApp.Create(new AppOptions
 
 var builder = WebApplication.CreateBuilder(args);
 
+using var loggerFactory =
+    LoggerFactory.Create(lb => lb.AddConfiguration(builder.Configuration));
+
+builder.Services.AddLogging(opt => opt.AddConsole());
+
 // Support both gRPC services and controllers
-builder.Services.AddControllers();
+builder.Services.AddControllers(opts =>
+{
+    opts.Filters.Add<ExceptionFilter>();
+});
 
 // Database context
 builder.Services.AddScoped<AssignmentPRNContext>();
