@@ -164,7 +164,7 @@ namespace WebAPI.Controllers
 
             try
             {
-                System.IO.File.Delete(resource.FilePath);
+                _firebaseStorage.DeleteObjectAsync(Resource.BucketName, Resource.GetStoragePath(resourceId));
                 _context.Remove(resource);
                 _context.SaveChanges();
                 return Ok();
