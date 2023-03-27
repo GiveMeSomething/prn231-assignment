@@ -21,9 +21,12 @@
                                     @if (role == "admin" || role == "teacher")
                                     {
                                         <div class="hover">
-                                            <button type="button" class="btn btn-icon btn-danger">
+                                            <a class="btn btn-icon btn-danger"
+                                               asp-controller="File"
+                                               asp-action="Delete"
+                                               onclick="(() => event.stopPropagation())">
                                                 <i class="fa fa-trash"></i>
-                                            </button>
+                                            </a>
                                         </div>
                                     }
                                     <div class="icon">
