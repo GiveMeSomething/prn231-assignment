@@ -1,21 +1,19 @@
-﻿using System;
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 using System.Text;
 using AutoMapper;
 using BusinessObject.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Utils.Jwt;
 using WebAPI.Auth;
 using WebAPI.AutoMapper.Models;
-using WebAPI.Base.Jwt;
+using WebAPI.Base.Guard;
 using WebAPI.DTOs;
-using WebAPI.Services;
 
 namespace WebAPI.Controllers
 {
-	[Route("api/auth")]
+    [Route("api/auth")]
 	[ApiController]
+	[UseGuard(typeof(RoleGuard))]
 	public class AuthController
 	{
 		private readonly AssignmentPRNContext _context;
